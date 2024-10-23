@@ -6,16 +6,16 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export class JsccPocCfnBedrockStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+    super(scope, id, {...props, stackName: 'jsccPocCFNBedrock'});
 
     // Create an S3 bucket
-    const bucket = new s3.Bucket(this, 'MyBucket', {
+    const bucket = new s3.Bucket(this, 'jscc-poc-cfn-bedrock-bucket', {
       versioned: true,
     });
 
     // Create a Lambda function
     const myFunction = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = async function(event) {
