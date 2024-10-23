@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 import * as path from 'node:path';
 
@@ -16,12 +17,21 @@ export class JsccPocCfnBedrockStack extends cdk.Stack {
 
     // Create a Lambda function
     const myFunction = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.PYTHON_3_12,
       handler: 'handler.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../lambda')),
     });
 
     // Grant Lambda permission to read/write from the bucket
     bucket.grantReadWrite(myFunction);
+
+    const bedrockPolicy = new iam.PolicyStatement({
+      actions: [
+        "bedrock:InvokeModel", // Permissions to invoke the model
+      ],
+      resources: ['*'], // Replace with the ARN of your Bedrock model if needed
+    });
+    
+    myFunction.addToRolePolicy(bedrockPolicy);
   }
 }
