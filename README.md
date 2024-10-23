@@ -1,14 +1,35 @@
-# Welcome to your CDK TypeScript project
+POC to connect AWS lambda, AWS s3 and AWS bedrock
 
-This is a blank project for CDK development with TypeScript.
+# Prerequisits
+Bedrock models should be enabled in desired region. To request access visit this link https://us-west-2.console.aws.amazon.com/bedrock/home?region=us-west-2#/modelaccess
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Deploy
+This repo uses cloudformation cdk with nodejs. To deploy use following commands
 
-## Useful commands
+```bash
+$> export AWS_REGION=us-west-2 
+$> npm ci
+$> npx cdk bootstrap
+$> npx cdk deploy
+```
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+To generage CFN template
+```bash
+$> npx cdk synth 
+```
+
+## Structural flow
+```mermaid
+sequenceDiagram
+    actor User
+    User ->> S3: Upload file
+    S3 -->> User: File uploaded
+    S3 -->> Lambda: Object created
+    activate Lambda
+    Lambda ->> S3: Read object
+    S3 -->> Lambda: Object content
+    Lambda ->> Bedrock: generate embedding
+    Bedrock -->> Lambda: embedding, number of input tokens
+    Lambda -> Lambda: print embedding result
+    deactivate Lambda
+```    
