@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
+import * as path from 'node:path';
 
 export class JsccPocCfnBedrockStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -16,13 +17,8 @@ export class JsccPocCfnBedrockStack extends cdk.Stack {
     // Create a Lambda function
     const myFunction = new lambda.Function(this, 'MyFunction', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`
-        exports.handler = async function(event) {
-          console.log("request:", JSON.stringify(event, undefined, 2));
-          return { statusCode: 200, body: "Hello from Lambda!" };
-        };
-      `),
+      handler: 'handler.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../lambda')),
     });
 
     // Grant Lambda permission to read/write from the bucket
